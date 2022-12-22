@@ -5,9 +5,19 @@ const addMessageForm = document.querySelector('#add-messages-form');
 const userNameInput = document.querySelector('#username');
 const messageContentInput = document.querySelector('#message-content');
 
+const CHAT_BOT = 'Chat Bot';
+
 const socket = io();
 
 socket.on('message', ({author, content}) => addMessage(author, content));
+
+socket.on('addUser', (user) => {
+    addMessage(CHAT_BOT, `${user} has joined the conversation!`);
+});
+
+socket.on('removeUser', (user) => {
+    addMessage(CHAT_BOT, `${user} has left the conversation!`)
+});
 
 let username = '';
 
@@ -23,6 +33,7 @@ function login() {
         username = userNameInput.value;
         loginForm.classList.remove('show');
         messagesSection.classList.add('show');
+        socket.emit('login', username );
     }
 }
 

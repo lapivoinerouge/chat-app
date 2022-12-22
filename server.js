@@ -5,6 +5,7 @@ const port = '8000';
 const socket = require('socket.io');
 
 const messages = [];
+const users = [];
 
 app.use(express.static(path.join(__dirname, '/client/public')));
 
@@ -19,12 +20,23 @@ const server = app.listen(port || 8000, () => {
 const io = socket(server);
 
 io.on('connection', (socket) => {
-    console.log('New client! Its id – ' + socket.id);
+    console.log('New client! Id: ' + socket.id);
+    let user = '';
+    socket.on('login', (username) => {
+        console.log('New user just logged in: ' + username);
+        user = username;
+        users.push({ name: user, id: socket.id });
+        socket.broadcast.emit('addUser', user);
+    });
     socket.on('message', (message) => { 
-        console.log('Oh, I\'ve got something from ' + socket.id);
+        console.log('New message from: ' + socket.id);
         messages.push(message);
         socket.broadcast.emit('message', message);
     });
-    socket.on('disconnect', () => { console.log('Oh, socket ' + socket.id + ' has left') });
-    console.log('I\'ve added a listener on message and disconnect events \n');
+    socket.on('disconnect', () => { 
+        console.log('Oh, socket ' + socket.id + ' has left');
+        const idx = users.map(o => o.id).indexOf(socket.id);
+        users.splice(idx, 1);
+        socket.broadcast.emit('removeUser', user);
+     });
 });
