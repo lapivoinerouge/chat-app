@@ -12,8 +12,7 @@ loginForm.addEventListener('submit', function(e) {
     login(e);
 });
 
-function login(e) {
-    e.preventDefault();
+function login() {
     if (userNameInput.value.length === 0) {
         alert('Enter your username');
     } else {
@@ -28,8 +27,7 @@ addMessageForm.addEventListener('submit', function(e) {
     sendMessage(e);
 });
 
-function sendMessage(e) {
-    e.preventDefault();
+function sendMessage() {
     if (messageContentInput.value.length === 0) {
         alert('Enter your message');
     } else {
